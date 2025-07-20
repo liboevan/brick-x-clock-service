@@ -1,6 +1,6 @@
-[English](README.en.md) | 中文
+[中文](README.md) | English
 
-# Brick Clock Service
+# Brick X Clock Service
 
 A high-precision Network Time Protocol (NTP) service built with Go, providing both client and server capabilities for time synchronization in distributed systems.
 
@@ -211,248 +211,82 @@ curl -X PUT http://localhost:17003/server-mode \
   -d '{"enabled": false}'
 ```
 
-**Response:**
-```json
-{
-  "success": true,
-  "server_mode_enabled": true
-}
-```
-
 ## 🔧 Configuration
 
-### NTP Configuration
-
-The service uses a custom NTP configuration with these key settings:
-
-```conf
-# Upstream NTP server
-server pool.ntp.org iburst
-
-# Allow all clients (server mode)
-allow 0.0.0.0/0
-
-# Local stratum for fallback
-local stratum 10
-
-# NTP port
-port 123
-
-# Log settings
-log measurements statistics tracking
-```
-
 ### Environment Variables
+- `TZ=UTC` - Timezone setting
+- `NTP_SERVERS` - Default NTP servers (space-separated)
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `VERSION` | `0.1.0-dev` | Application version |
-| `BUILD_DATETIME` | Current time | Build timestamp |
-| `IMAGE_NAME` | `el/brick-x-clock` | Docker image name |
-| `CONTAINER_NAME` | `el-brick-x-clock` | Docker container name |
-| `API_PORT` | `17003` | API server port |
-| `NTP_PORT` | `123` | NTP server port |
+### Ports
+- **123/UDP** - NTP protocol port
+- **17003/TCP** - HTTP API port
 
-## 🌐 Network Ports
+### Default NTP Servers
+- `pool.ntp.org`
+- `time.google.com`
+- `time.windows.com`
 
-| Port | Protocol | Purpose |
-|------|----------|---------|
-| `123` | UDP | NTP server/client traffic |
-| `17003` | TCP | HTTP API server |
-
-## 🐳 Docker Deployment
-
-### Build Image
-
-```bash
-./scripts/build.sh [version]
-```
-
-**Examples:**
-```bash
-./scripts/build.sh                    # Build with default version (0.1.0-dev)
-./scripts/build.sh 1.0.0             # Build with specific version
-```
-
-### Run Container
-
-```bash
-./scripts/run.sh [version]
-```
-
-**Examples:**
-```bash
-./scripts/run.sh                     # Run with default version
-./scripts/run.sh 1.0.0              # Run with specific version
-```
-
-### Docker Compose
-
-```yaml
-version: '3.8'
-services:
-  brick-x-clock:
-    image: el/brick-x-clock:latest
-    container_name: el-brick-x-clock
-    ports:
-      - "123:123/udp"
-      - "17003:17003"
-    restart: unless-stopped
-    privileged: true
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-    environment:
-      - VERSION=0.1.0-dev
-```
-
-## 🔍 Monitoring & Troubleshooting
-
-### Check Service Status
-
-```bash
-# Container status
-./scripts/quick_start.sh status
-
-# View logs
-./scripts/quick_start.sh logs
-
-# Test API
-curl http://localhost:17003/health
-curl http://localhost:17003/status
-```
+## 🐛 Troubleshooting
 
 ### Common Issues
 
-1. **Port Conflicts**: Ensure ports 123/UDP and 17003/TCP are available
-2. **Network Access**: Verify connectivity to NTP servers
-3. **Permissions**: Container needs root access for NTP operations
-4. **Time Sync**: Check if system time is reasonably accurate
-5. **API Not Responding**: Wait for service to fully start (up to 30 seconds)
+1. **NTP Port Already in Use**
+   ```bash
+   # Check port usage
+   sudo lsof -i :123
+   
+   # Stop existing NTP service
+   sudo systemctl stop ntp
+   ```
 
-### Log Locations
+2. **Container Won't Start**
+   ```bash
+   # Check image
+   docker images | grep brick-x-clock
+   
+   # View logs
+   ./scripts/run.sh logs
+   ```
 
-- **Application Logs**: Docker container logs
-- **NTP Logs**: `/var/log/ntp/` (inside container)
+3. **Synchronization Issues**
+   ```bash
+   # Check NTP status
+   curl http://localhost:17003/status
+   
+   # Test with different servers
+   curl -X PUT http://localhost:17003/servers \
+     -H "Content-Type: application/json" \
+     -d '{"servers": ["time.google.com"]}'
+   ```
 
-### Health Checks
-
+### Debug Commands
 ```bash
-# Basic health check
+# Check container status
+./scripts/run.sh status
+
+# View detailed logs
+./scripts/run.sh logs -f
+
+# Test health check
 curl http://localhost:17003/health
 
-# Detailed status check
-curl http://localhost:17003/status?flags=23
-
-# Test all endpoints
-./scripts/test.sh
+# Check NTP synchronization
+curl http://localhost:17003/status?flags=1
 ```
 
-## 🏗️ Architecture
+## 🎯 Best Practices
 
-### Service Components
+1. **Use reliable NTP servers** - Choose stable, low-latency servers
+2. **Monitor synchronization** - Regularly check status endpoints
+3. **Configure timezone** - Set appropriate TZ environment variable
+4. **Backup configuration** - Save custom server configurations
+5. **Monitor logs** - Use `./scripts/run.sh logs` to view output
 
-- **API Server**: Go HTTP server on port 17003
-- **NTP Daemon**: Background NTP service on port 123
-- **Configuration Management**: Dynamic server configuration
-- **Caching Layer**: In-memory cache for performance (30s TTL)
-- **Health Monitoring**: Built-in health checks
+## 📞 Support
 
-### Data Flow
-
-1. **Client Requests** → API Server (port 17003)
-2. **API Server** → NTP Daemon (internal communication)
-3. **NTP Daemon** → Upstream NTP servers (port 123)
-4. **Response** → Client via API
-
-### Caching Strategy
-
-- **Tracking Data**: 30-second TTL
-- **Sources Data**: 30-second TTL
-- **Activity Data**: 30-second TTL
-- **Server Mode**: 5-second TTL
-- **Clients Data**: 30-second TTL
-
-## 🔒 Security Considerations
-
-- **Network**: Use VPN for secure NTP communication
-- **Authentication**: Consider implementing API authentication
-- **Updates**: Regularly update NTP for security patches
-- **Firewall**: Restrict access to necessary ports only
-- **Container Security**: Run with minimal required privileges
-
-## 🚀 Performance
-
-- **Response Time**: < 100ms for API calls
-- **Memory Usage**: ~50MB container footprint
-- **CPU Usage**: Minimal during normal operation
-- **Network**: Efficient NTP packet handling
-- **Caching**: Reduces NTP command overhead
-
-## 🧪 Testing
-
-### Automated Testing
-
-```bash
-# Run all tests
-./scripts/test.sh
-
-# Test with custom host
-./scripts/test.sh localhost:17003
-
-# Test with remote host
-./scripts/test.sh api.example.com:17003
-```
-
-### Manual Testing
-
-```bash
-# Health check
-curl http://localhost:17003/health
-
-# Version info
-curl http://localhost:17003/version
-
-# Status with specific flags
-curl "http://localhost:17003/status?flags=23"
-
-# Configure servers
-curl -X PUT http://localhost:17003/servers \
-  -H "Content-Type: application/json" \
-  -d '{"servers": ["pool.ntp.org"]}'
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Run the test suite: `./scripts/test.sh`
-6. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🆘 Support
-
-For issues and questions:
-- Check the troubleshooting section above
-- Review the logs: `./scripts/quick_start.sh logs`
-- Test the API endpoints manually
-- Open an issue on GitHub
-
-## 📝 Changelog
-
-### Version 0.1.0-dev
-- Initial release
-- NTP client and server capabilities
-- RESTful API for management
-- Docker containerization
-- Caching layer for performance
-- Comprehensive testing suite
-
----
-
-**Version**: 0.1.0-dev  
-**Last Updated**: July 2025
+For issues or questions:
+1. Check service status: `./scripts/run.sh status`
+2. View service logs: `./scripts/run.sh logs`
+3. Test NTP synchronization: `curl http://localhost:17003/status`
+4. Verify port availability: `sudo lsof -i :123`
+5. Check container details: `docker inspect el-brick-x-clock` 
