@@ -26,9 +26,9 @@ RUN go build -ldflags "-X 'main.AppVersion=$VERSION' -X 'main.BuildDateTime=$BUI
 RUN echo "$VERSION" > /app/VERSION
 
 # Create build-info.json from build arguments
-RUN echo "{\"version\":\"$VERSION\",\"buildDateTime\":\"$BUILD_DATETIME\",\"buildTimestamp\":$(date +%s),\"environment\":\"production\",\"service\":\"brick-clock\",\"description\":\"NTP Time Synchronization\"}" > /app/build-info.json
+RUN echo "{\"version\":\"$VERSION\",\"buildDateTime\":\"$BUILD_DATETIME\",\"buildTimestamp\":$(date +%s),\"environment\":\"production\",\"service\":\"brick-x-clock\",\"description\":\"NTP Time Synchronization\"}" > /app/build-info.json
 
-# Create config directory for brick-clock
+# Create config directory for brick-x-clock
 RUN mkdir -p /etc/brick/clock
 # Copy public key for JWT validation
 COPY public.pem /etc/brick/clock/public.pem
@@ -40,25 +40,28 @@ FROM alpine:latest
 RUN apk update && \
     apk add --no-cache chrony
 
+# Set working directory
+WORKDIR /app
+
 # Copy chrony configuration
 COPY chrony.conf /etc/chrony/chrony.conf
 
 # Copy entrypoint script
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
 # Copy the compiled Go binary and files from builder stage
-COPY --from=builder /app/chrony-api-app /chrony-api-app
-COPY --from=builder /app/VERSION /VERSION
-COPY --from=builder /app/build-info.json /build-info.json
+COPY --from=builder /app/chrony-api-app /app/chrony-api-app
+COPY --from=builder /app/VERSION /app/VERSION
+COPY --from=builder /app/build-info.json /app/build-info.json
 COPY --from=builder /etc/brick/clock/public.pem /etc/brick/clock/public.pem
 
 # Copy scripts
-COPY scripts/ /scripts/
+COPY scripts/ /app/scripts/
 
 # Expose ports
 EXPOSE 123/udp
-EXPOSE 17003
+EXPOSE 17103
 
 # Set entrypoint
-ENTRYPOINT ["/entrypoint.sh"] 
+ENTRYPOINT ["/app/entrypoint.sh"] 

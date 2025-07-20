@@ -4,12 +4,14 @@
 # This file contains common variables and functions used by all scripts
 
 # Project Configuration
-PROJECT_NAME="brick-clock"
-IMAGE_NAME="el/brick-clock"
-CONTAINER_NAME="el-brick-clock"
-API_PORT="17003"
+PROJECT_NAME="brick-x-clock"
+IMAGE_NAME="el/brick-x-clock"
+CONTAINER_NAME="el-brick-x-clock"
+API_PORT="17103"
 NTP_PORT="123"
-DEFAULT_VERSION="0.1.0-dev"
+NETWORK_NAME="el-brick-x-network"
+DEFAULT_VERSION="0.1.0-dev"  # Default version for build
+RUN_VERSION="0.1.0-dev"      # Version for start/stop operations
 
 # Colors for output
 RED='\033[0;31m'
@@ -49,17 +51,22 @@ run_container() {
     if [ -n "$version_arg" ]; then
         VERSION="$version_arg"
     else
-        VERSION="$DEFAULT_VERSION"
+        VERSION="$RUN_VERSION"
     fi
     print_info "Running $CONTAINER_NAME (version: $VERSION)..."
     docker run -d --name $CONTAINER_NAME \
       --cap-add=SYS_TIME \
       --security-opt seccomp:unconfined \
-      --network el-brick-network \
+      --network $NETWORK_NAME \
       -e ENVIRONMENT=production \
       -e LOG_LEVEL=info \
       -p $NTP_PORT:$NTP_PORT/udp \
       -p $API_PORT:$API_PORT \
+      --health-cmd="wget --no-verbose --tries=1 --method=GET http://localhost:$API_PORT/health" \
+      --health-interval=30s \
+      --health-timeout=10s \
+      --health-retries=3 \
+      --health-start-period=40s \
       $IMAGE_NAME:$VERSION
     print_info "Container started!"
     echo "   API: http://localhost:$API_PORT"

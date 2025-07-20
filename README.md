@@ -138,7 +138,7 @@ curl http://localhost:17003/version
     "buildDateTime": "2024-03-18T10:30:45Z",
     "buildTimestamp": 1710759045,
     "environment": "production",
-    "service": "brick-clock",
+    "service": "brick-x-clock",
     "description": "Brick Clock NTP Service"
   }
 }
@@ -246,8 +246,8 @@ log measurements statistics tracking
 |----------|---------|-------------|
 | `VERSION` | `0.1.0-dev` | Application version |
 | `BUILD_DATETIME` | Current time | Build timestamp |
-| `IMAGE_NAME` | `el/brick-clock` | Docker image name |
-| `CONTAINER_NAME` | `el-brick-clock` | Docker container name |
+| `IMAGE_NAME` | `el/brick-x-clock` | Docker image name |
+| `CONTAINER_NAME` | `el-brick-x-clock` | Docker container name |
 | `API_PORT` | `17003` | API server port |
 | `NTP_PORT` | `123` | NTP server port |
 
@@ -289,9 +289,9 @@ log measurements statistics tracking
 ```yaml
 version: '3.8'
 services:
-  brick-clock:
-    image: el/brick-clock:latest
-    container_name: el-brick-clock
+  brick-x-clock:
+    image: el/brick-x-clock:latest
+    container_name: el-brick-x-clock
     ports:
       - "123:123/udp"
       - "17003:17003"

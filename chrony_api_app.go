@@ -854,7 +854,7 @@ func handleServers(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Unauthorized: "+err.Error(), http.StatusUnauthorized)
 			return
 		}
-		if permissionCheckEnabled && !hasPermission(claims, "clock/servers") {
+		if permissionCheckEnabled && !hasPermission(claims, "x/clock:write") {
 			http.Error(w, "Forbidden: insufficient permissions", http.StatusForbidden)
 			return
 		}
@@ -890,7 +890,7 @@ func handleServers(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Unauthorized: "+err.Error(), http.StatusUnauthorized)
 			return
 		}
-		if permissionCheckEnabled && !hasPermission(claims, "clock/servers") {
+		if permissionCheckEnabled && !hasPermission(claims, "x/clock:write") {
 			http.Error(w, "Forbidden: insufficient permissions", http.StatusForbidden)
 			return
 		}
@@ -971,7 +971,7 @@ func handleServerMode(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Unauthorized: "+err.Error(), http.StatusUnauthorized)
 			return
 		}
-		if permissionCheckEnabled && !hasPermission(claims, "clock/server_mode") {
+		if permissionCheckEnabled && !hasPermission(claims, "x/clock:write") {
 			http.Error(w, "Forbidden: insufficient permissions", http.StatusForbidden)
 			return
 		}

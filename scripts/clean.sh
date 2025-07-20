@@ -18,7 +18,7 @@ fi
 
 # Optional: Remove all images if requested
 if [ "$1" = "--image" ]; then
-    print_info "Removing all brick-clock images..."
+    print_info "Removing all brick-x-clock images..."
     docker images --filter "reference=$IMAGE_NAME" --format "{{.Repository}}:{{.Tag}}" | while read image; do
         print_info "Removing image: $image"
         docker rmi "$image" 2>/dev/null || true

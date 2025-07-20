@@ -1,4 +1,4 @@
-module el/brick-clock
+module el/brick-x-clock
 
 go 1.21.13
 
