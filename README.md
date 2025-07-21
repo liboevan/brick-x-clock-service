@@ -1,137 +1,137 @@
 [English](README.en.md) | 中文
 
-# Brick Clock Service
+# Brick 时钟服务
 
-A high-precision Network Time Protocol (NTP) service built with Go, providing both client and server capabilities for time synchronization in distributed systems.
+一个用 Go 构建的高精度网络时间协议 (NTP) 服务，为分布式系统提供客户端和服务器两种时间同步能力。
 
-## 🚀 Features
+## 🚀 功能特性
 
-- **NTP Client Mode**: Synchronize with upstream NTP servers
-- **NTP Server Mode**: Act as a time source for other devices
-- **RESTful API**: Full HTTP API for monitoring and management
-- **Real-time Status**: Live tracking of synchronization status
-- **Server Management**: Add, remove, and configure NTP servers
-- **Activity Monitoring**: Track success/failure statistics
-- **Docker Ready**: Containerized deployment with Alpine Linux
-- **Health Monitoring**: Built-in health checks and status endpoints
-- **Caching Layer**: In-memory caching for improved performance
-- **Dynamic Configuration**: Runtime server and mode configuration
+- **NTP 客户端模式**: 与上游 NTP 服务器同步时间
+- **NTP 服务器模式**: 作为其他设备的时间源
+- **RESTful API**: 用于监控和管理的完整 HTTP API
+- **实时状态**: 实时跟踪同步状态
+- **服务器管理**: 添加、删除和配置 NTP 服务器
+- **活动监控**: 跟踪成功/失败统计
+- **Docker 就绪**: 使用 Alpine Linux 的容器化部署
+- **健康监控**: 内置健康检查和状态端点
+- **缓存层**: 内存缓存以提高性能
+- **动态配置**: 运行时服务器和模式配置
 
-## 📋 Prerequisites
+## 📋 前置条件
 
-- Docker and Docker Compose
-- Linux environment (for NTP compatibility)
-- Network access to NTP servers
-- Port 123/UDP available for NTP traffic
-- Port 17003/TCP available for API
-- `jq` (optional, for JSON formatting in tests)
+- Docker 和 Docker Compose
+- Linux 环境 (为了 NTP 兼容性)
+- 对 NTP 服务器的网络访问
+- 123/UDP 端口可用于 NTP 流量
+- 17003/TCP 端口可用于 API
+- `jq` (可选, 用于在测试中格式化 JSON)
 
-## 🛠️ Quick Start
+## 🛠️ 快速开始
 
-### Option 1: One-Command Setup (Recommended)
+### 选项 1: 一键设置 (推荐)
 
 ```bash
 ./scripts/quick_start.sh
 ```
 
-This script performs a complete build → run → test cycle.
+此脚本执行完整的构建 → 运行 → 测试周期。
 
-### Option 2: Step-by-Step Setup
+### 选项 2: 分步设置
 
 ```bash
-# Build the Docker image
+# 构建 Docker 镜像
 ./scripts/build.sh
 
-# Run the container
+# 运行容器
 ./scripts/run.sh
 
-# Test the API endpoints
+# 测试 API 端点
 ./scripts/test.sh
 ```
 
-## 📚 Scripts Reference
+## 📚 脚本参考
 
-### Main Management Script
+### 主要管理脚本
 
 ```bash
 ./scripts/quick_start.sh [command] [version]
 ```
 
-**Commands:**
-- `build` - Build Docker image only
-- `run` - Run container only  
-- `test` - Test API endpoints only
-- `clean` - Stop and remove containers
-- `logs` - Show container logs
-- `status` - Check container status
-- `all` - Full cycle (default)
+**命令:**
+- `build` - 只构建 Docker 镜像
+- `run` - 只运行容器
+- `test` - 只测试 API 端点
+- `clean` - 停止并移除容器
+- `logs` - 显示容器日志
+- `status` - 检查容器状态
+- `all` - 完整周期 (默认)
 
-**Examples:**
+**示例:**
 ```bash
-./scripts/quick_start.sh                    # Full cycle with default version
-./scripts/quick_start.sh test               # Test only
-./scripts/quick_start.sh all 1.0.0         # Full cycle with specific version
+./scripts/quick_start.sh                    # 使用默认版本完整周期
+./scripts/quick_start.sh test               # 只测试
+./scripts/quick_start.sh all 1.0.0         # 使用特定版本完整周期
 ```
 
-### Individual Scripts
+### 单独脚本
 
-| Script | Purpose | Usage |
+| 脚本 | 用途 | 用法 |
 |--------|---------|-------|
-| `build.sh` | Build Docker image | `./scripts/build.sh [version]` |
-| `run.sh` | Start container | `./scripts/run.sh [version]` |
-| `test.sh` | Test API endpoints | `./scripts/test.sh [host:port]` |
-| `clean.sh` | Clean up resources | `./scripts/clean.sh [--image]` |
-| `config.sh` | Configuration management | `./scripts/config.sh` |
+| `build.sh` | 构建 Docker 镜像 | `./scripts/build.sh [version]` |
+| `run.sh` | 启动容器 | `./scripts/run.sh [version]` |
+| `test.sh` | 测试 API 端点 | `./scripts/test.sh [host:port]` |
+| `clean.sh` | 清理资源 | `./scripts/clean.sh [--image]` |
+| `config.sh` | 配置管理 | `./scripts/config.sh` |
 
-## 🔌 API Reference
+## 🔌 API 参考
 
-### Core Endpoints
+### 核心端点
 
-| Method | Endpoint | Description |
+| 方法 | 端点 | 描述 |
 |--------|----------|-------------|
-| `GET` | `/health` | Health check endpoint |
-| `GET` | `/version` | Application version and build info |
-| `GET` | `/app-version` | Application version info |
-| `GET` | `/status` | Current synchronization status |
-| `GET` | `/status/tracking` | Detailed tracking information |
-| `GET` | `/status/sources` | NTP source information |
-| `GET` | `/status/activity` | Activity statistics |
-| `GET` | `/status/clients` | Connected client information |
-| `GET` | `/servers` | List configured NTP servers |
-| `PUT` | `/servers` | Configure NTP servers |
-| `DELETE` | `/servers` | Reset to default servers |
-| `PUT` | `/servers/default` | Set default NTP servers |
-| `GET` | `/server-mode` | Get server mode status |
-| `PUT` | `/server-mode` | Enable/disable server mode |
+| `GET` | `/health` | 健康检查端点 |
+| `GET` | `/version` | 应用版本和构建信息 |
+| `GET` | `/app-version` | 应用版本信息 |
+| `GET` | `/status` | 当前同步状态 |
+| `GET` | `/status/tracking` | 详细跟踪信息 |
+| `GET` | `/status/sources` | NTP 源信息 |
+| `GET` | `/status/activity` | 活动统计 |
+| `GET` | `/status/clients` | 连接的客户端信息 |
+| `GET` | `/servers` | 列出配置的 NTP 服务器 |
+| `PUT` | `/servers` | 配置 NTP 服务器 |
+| `DELETE` | `/servers` | 重置为默认服务器 |
+| `PUT` | `/servers/default` | 设置默认 NTP 服务器 |
+| `GET` | `/server-mode` | 获取服务器模式状态 |
+| `PUT` | `/server-mode` | 启用/禁用服务器模式 |
 
-### Status Endpoint Parameters
+### Status 端点参数
 
-The `/status` endpoint supports query parameters to control which data is returned:
+`/status` 端点支持查询参数来控制返回的数据:
 
-| Parameter | Value | Description |
+| 参数 | 值 | 描述 |
 |-----------|-------|-------------|
-| `flags` | `1` | Include tracking data only |
-| `flags` | `2` | Include sources data only |
-| `flags` | `4` | Include activity data only |
-| `flags` | `8` | Include clients data only |
-| `flags` | `16` | Include server mode data only |
-| `flags` | `23` | Include tracking + sources + activity + server mode (excludes clients) |
-| `flags` | `31` | Include all data (default) |
+| `flags` | `1` | 只包含跟踪数据 |
+| `flags` | `2` | 只包含源数据 |
+| `flags` | `4` | 只包含活动数据 |
+| `flags` | `8` | 只包含客户端数据 |
+| `flags` | `16` | 只包含服务器模式数据 |
+| `flags` | `23` | 包含跟踪 + 源 + 活动 + 服务器模式 (不包括客户端) |
+| `flags` | `31` | 包含所有数据 (默认) |
 
-### Request/Response Examples
+### 请求/响应示例
 
-**Health Check:**
+**健康检查:**
 ```bash
 curl http://localhost:17003/health
-# Response: OK
+# 响应: OK
 ```
 
-**Version Information:**
+**版本信息:**
 ```bash
 curl http://localhost:17003/version
 ```
 
-**Response:**
+**响应:**
 ```json
 {
   "version": "0.1.0-dev",
@@ -146,12 +146,12 @@ curl http://localhost:17003/version
 }
 ```
 
-**Status Information:**
+**状态信息:**
 ```bash
 curl http://localhost:17003/status
 ```
 
-**Response:**
+**响应:**
 ```json
 {
   "tracking": {
@@ -191,27 +191,27 @@ curl http://localhost:17003/status
 }
 ```
 
-**Configure Servers:**
+**配置服务器:**
 ```bash
 curl -X PUT http://localhost:17003/servers \
   -H "Content-Type: application/json" \
   -d '{"servers": ["pool.ntp.org", "time.google.com"]}'
 ```
 
-**Server Mode Control:**
+**服务器模式控制:**
 ```bash
-# Enable server mode
+# 启用服务器模式
 curl -X PUT http://localhost:17003/server-mode \
   -H "Content-Type: application/json" \
   -d '{"enabled": true}'
 
-# Disable server mode
+# 禁用服务器模式
 curl -X PUT http://localhost:17003/server-mode \
   -H "Content-Type: application/json" \
   -d '{"enabled": false}'
 ```
 
-**Response:**
+**响应:**
 ```json
 {
   "success": true,
@@ -219,71 +219,71 @@ curl -X PUT http://localhost:17003/server-mode \
 }
 ```
 
-## 🔧 Configuration
+## 🔧 配置
 
-### NTP Configuration
+### NTP 配置
 
-The service uses a custom NTP configuration with these key settings:
+该服务使用自定义 NTP 配置，包含以下关键设置:
 
 ```conf
-# Upstream NTP server
+# 上游 NTP 服务器
 server pool.ntp.org iburst
 
-# Allow all clients (server mode)
+# 允许所有客户端 (服务器模式)
 allow 0.0.0.0/0
 
-# Local stratum for fallback
+# 本地 stratum 作为备用
 local stratum 10
 
-# NTP port
+# NTP 端口
 port 123
 
-# Log settings
+# 日志设置
 log measurements statistics tracking
 ```
 
-### Environment Variables
+### 环境变量
 
-| Variable | Default | Description |
+| 变量 | 默认值 | 描述 |
 |----------|---------|-------------|
-| `VERSION` | `0.1.0-dev` | Application version |
-| `BUILD_DATETIME` | Current time | Build timestamp |
-| `IMAGE_NAME` | `el/brick-x-clock` | Docker image name |
-| `CONTAINER_NAME` | `el-brick-x-clock` | Docker container name |
-| `API_PORT` | `17003` | API server port |
-| `NTP_PORT` | `123` | NTP server port |
+| `VERSION` | `0.1.0-dev` | 应用版本 |
+| `BUILD_DATETIME` | 当前时间 | 构建时间戳 |
+| `IMAGE_NAME` | `el/brick-x-clock` | Docker 镜像名称 |
+| `CONTAINER_NAME` | `el-brick-x-clock` | Docker 容器名称 |
+| `API_PORT` | `17003` | API 服务器端口 |
+| `NTP_PORT` | `123` | NTP 服务器端口 |
 
-## 🌐 Network Ports
+## 🌐 网络端口
 
-| Port | Protocol | Purpose |
+| 端口 | 协议 | 用途 |
 |------|----------|---------|
-| `123` | UDP | NTP server/client traffic |
-| `17003` | TCP | HTTP API server |
+| `123` | UDP | NTP 服务器/客户端流量 |
+| `17003` | TCP | HTTP API 服务器 |
 
-## 🐳 Docker Deployment
+## 🐳 Docker 部署
 
-### Build Image
+### 构建镜像
 
 ```bash
 ./scripts/build.sh [version]
 ```
 
-**Examples:**
+**示例:**
 ```bash
-./scripts/build.sh                    # Build with default version (0.1.0-dev)
-./scripts/build.sh 1.0.0             # Build with specific version
+./scripts/build.sh                    # 使用默认版本构建 (0.1.0-dev)
+./scripts/build.sh 1.0.0             # 使用特定版本构建
 ```
 
-### Run Container
+### 运行容器
 
 ```bash
 ./scripts/run.sh [version]
 ```
 
-**Examples:**
+**示例:**
 ```bash
-./scripts/run.sh                     # Run with default version
-./scripts/run.sh 1.0.0              # Run with specific version
+./scripts/run.sh                     # 使用默认版本运行
+./scripts/run.sh 1.0.0              # 使用特定版本运行
 ```
 
 ### Docker Compose
@@ -305,154 +305,154 @@ services:
       - VERSION=0.1.0-dev
 ```
 
-## 🔍 Monitoring & Troubleshooting
+## 🔍 监控与故障排除
 
-### Check Service Status
+### 检查服务状态
 
 ```bash
-# Container status
+# 容器状态
 ./scripts/quick_start.sh status
 
-# View logs
+# 查看日志
 ./scripts/quick_start.sh logs
 
-# Test API
+# 测试 API
 curl http://localhost:17003/health
 curl http://localhost:17003/status
 ```
 
-### Common Issues
+### 常见问题
 
-1. **Port Conflicts**: Ensure ports 123/UDP and 17003/TCP are available
-2. **Network Access**: Verify connectivity to NTP servers
-3. **Permissions**: Container needs root access for NTP operations
-4. **Time Sync**: Check if system time is reasonably accurate
-5. **API Not Responding**: Wait for service to fully start (up to 30 seconds)
+1. **端口冲突**: 确保 123/UDP 和 17003/TCP 端口可用
+2. **网络访问**: 验证与 NTP 服务器的连接性
+3. **权限**: 容器需要 root 访问权限才能进行 NTP 操作
+4. **时间同步**: 检查系统时间是否大致准确
+5. **API 无响应**: 等待服务完全启动 (最多 30 秒)
 
-### Log Locations
+### 日志位置
 
-- **Application Logs**: Docker container logs
-- **NTP Logs**: `/var/log/ntp/` (inside container)
+- **应用日志**: Docker 容器日志
+- **NTP 日志**: `/var/log/ntp/` (容器内)
 
-### Health Checks
+### 健康检查
 
 ```bash
-# Basic health check
+# 基本健康检查
 curl http://localhost:17003/health
 
-# Detailed status check
+# 详细状态检查
 curl http://localhost:17003/status?flags=23
 
-# Test all endpoints
+# 测试所有端点
 ./scripts/test.sh
 ```
 
-## 🏗️ Architecture
+## 🏗️ 架构
 
-### Service Components
+### 服务组件
 
-- **API Server**: Go HTTP server on port 17003
-- **NTP Daemon**: Background NTP service on port 123
-- **Configuration Management**: Dynamic server configuration
-- **Caching Layer**: In-memory cache for performance (30s TTL)
-- **Health Monitoring**: Built-in health checks
+- **API 服务器**: 运行在 17003 端口的 Go HTTP 服务器
+- **NTP 守护进程**: 运行在 123 端口的后台 NTP 服务
+- **配置管理**: 动态服务器配置
+- **缓存层**: 用于提高性能的内存缓存 (30秒 TTL)
+- **健康监控**: 内置健康检查
 
-### Data Flow
+### 数据流
 
-1. **Client Requests** → API Server (port 17003)
-2. **API Server** → NTP Daemon (internal communication)
-3. **NTP Daemon** → Upstream NTP servers (port 123)
-4. **Response** → Client via API
+1. **客户端请求** → API 服务器 (17003 端口)
+2. **API 服务器** → NTP 守护进程 (内部通信)
+3. **NTP 守护进程** → 上游 NTP 服务器 (123 端口)
+4. **响应** → 通过 API 返回客户端
 
-### Caching Strategy
+### 缓存策略
 
-- **Tracking Data**: 30-second TTL
-- **Sources Data**: 30-second TTL
-- **Activity Data**: 30-second TTL
-- **Server Mode**: 5-second TTL
-- **Clients Data**: 30-second TTL
+- **跟踪数据**: 30秒 TTL
+- **源数据**: 30秒 TTL
+- **活动数据**: 30秒 TTL
+- **服务器模式**: 5秒 TTL
+- **客户端数据**: 30秒 TTL
 
-## 🔒 Security Considerations
+## 🔒 安全考虑
 
-- **Network**: Use VPN for secure NTP communication
-- **Authentication**: Consider implementing API authentication
-- **Updates**: Regularly update NTP for security patches
-- **Firewall**: Restrict access to necessary ports only
-- **Container Security**: Run with minimal required privileges
+- **网络**: 使用 VPN 进行安全的 NTP 通信
+- **认证**: 考虑实现 API 认证
+- **更新**: 定期更新 NTP 以获取安全补丁
+- **防火墙**: 仅限制对必要端口的访问
+- **容器安全**: 以最小所需权限运行
 
-## 🚀 Performance
+## 🚀 性能
 
-- **Response Time**: < 100ms for API calls
-- **Memory Usage**: ~50MB container footprint
-- **CPU Usage**: Minimal during normal operation
-- **Network**: Efficient NTP packet handling
-- **Caching**: Reduces NTP command overhead
+- **响应时间**: API 调用 < 100ms
+- **内存使用**: ~50MB 容器占用
+- **CPU 使用**: 正常操作期间极少
+- **网络**: 高效的 NTP 包处理
+- **缓存**: 减少 NTP 命令开销
 
-## 🧪 Testing
+## 🧪 测试
 
-### Automated Testing
+### 自动化测试
 
 ```bash
-# Run all tests
+# 运行所有测试
 ./scripts/test.sh
 
-# Test with custom host
+# 使用自定义主机测试
 ./scripts/test.sh localhost:17003
 
-# Test with remote host
+# 使用远程主机测试
 ./scripts/test.sh api.example.com:17003
 ```
 
-### Manual Testing
+### 手动测试
 
 ```bash
-# Health check
+# 健康检查
 curl http://localhost:17003/health
 
-# Version info
+# 版本信息
 curl http://localhost:17003/version
 
-# Status with specific flags
+# 带特定标志的状态
 curl "http://localhost:17003/status?flags=23"
 
-# Configure servers
+# 配置服务器
 curl -X PUT http://localhost:17003/servers \
   -H "Content-Type: application/json" \
   -d '{"servers": ["pool.ntp.org"]}'
 ```
 
-## 🤝 Contributing
+## 🤝 贡献
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Run the test suite: `./scripts/test.sh`
-6. Submit a pull request
+1. Fork 仓库
+2. 创建功能分支
+3. 进行更改
+4. 如果适用，添加测试
+5. 运行测试套件: `./scripts/test.sh`
+6. 提交拉取请求
 
-## 📄 License
+## 📄 许可证
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+本项目根据 MIT 许可证授权 - 详情见 LICENSE 文件。
 
-## 🆘 Support
+## 🆘 支持
 
-For issues and questions:
-- Check the troubleshooting section above
-- Review the logs: `./scripts/quick_start.sh logs`
-- Test the API endpoints manually
-- Open an issue on GitHub
+如有问题:
+- 查看上方的故障排除部分
+- 查看日志: `./scripts/quick_start.sh logs`
+- 手动测试 API 端点
+- 在 GitHub 上开启一个 issue
 
-## 📝 Changelog
+## 📝 更新日志
 
-### Version 0.1.0-dev
-- Initial release
-- NTP client and server capabilities
-- RESTful API for management
-- Docker containerization
-- Caching layer for performance
-- Comprehensive testing suite
+### 版本 0.1.0-dev
+- 初始版本
+- NTP 客户端和服务器功能
+- 用于管理的 RESTful API
+- Docker 容器化
+- 用于性能的缓存层
+- 全面的测试套件
 
 ---
 
-**Version**: 0.1.0-dev  
-**Last Updated**: July 2025
+**版本**: 0.1.0-dev  
+**最后更新**: 2025年7月

@@ -22,7 +22,7 @@ import (
 const (
 	CHRONY_CONF_PATH = "/etc/chrony/chrony.conf"
 	DEFAULT_SERVERS  = "pool.ntp.org"
-	BUILD_INFO_PATH  = "/build-info.json"
+	BUILD_INFO_PATH  = "/app/build-info.json"
 	STATUS_TRACKING    = 1
 	STATUS_SOURCES     = 2
 	STATUS_ACTIVITY    = 4
@@ -1075,7 +1075,7 @@ func main() {
 		w.Write([]byte("OK"))
 	})
 	
-	port := "17003"
+	port := "17103"
 	if envPort := os.Getenv("PORT"); envPort != "" {
 		port = envPort
 	}

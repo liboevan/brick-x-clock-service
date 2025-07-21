@@ -38,7 +38,8 @@ FROM alpine:latest
 
 # Install chrony and other dependencies
 RUN apk update && \
-    apk add --no-cache chrony
+    apk add --no-cache chrony && \
+    apk add --no-cache curl
 
 # Set working directory
 WORKDIR /app
