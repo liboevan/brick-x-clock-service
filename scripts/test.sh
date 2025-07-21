@@ -3,9 +3,9 @@ set -e
 
 # Brick Clock Auth+Permission Test Script
 # Usage: ./test.sh [clock_host:port] [auth_host:port]
-# Default: clock=localhost:17003, auth=localhost:17001
+# Default: clock=localhost:17103, auth=localhost:17001
 
-CLOCK_API="${1:-localhost:17003}"
+CLOCK_API="${1:-localhost:17103}"
 AUTH_API="${2:-localhost:17001}"
 CLOCK_URL="http://$CLOCK_API"
 AUTH_URL="http://$AUTH_API"

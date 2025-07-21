@@ -23,7 +23,7 @@ A high-precision Network Time Protocol (NTP) service built with Go, providing bo
 - Linux environment (for NTP compatibility)
 - Network access to NTP servers
 - Port 123/UDP available for NTP traffic
-- Port 17003/TCP available for API
+- Port 17103/TCP available for API
 - `jq` (optional, for JSON formatting in tests)
 
 ## 🛠️ Quick Start
@@ -31,7 +31,7 @@ A high-precision Network Time Protocol (NTP) service built with Go, providing bo
 ### Option 1: One-Command Setup (Recommended)
 
 ```bash
-./scripts/quick_start.sh
+./scripts/quick.sh
 ```
 
 This script performs a complete build → run → test cycle.
@@ -42,11 +42,14 @@ This script performs a complete build → run → test cycle.
 # Build the Docker image
 ./scripts/build.sh
 
-# Run the container
-./scripts/run.sh
+# Start the container
+./scripts/start.sh
 
 # Test the API endpoints
 ./scripts/test.sh
+
+# Stop the container
+./scripts/stop.sh
 ```
 
 ## 📚 Scripts Reference
@@ -54,23 +57,24 @@ This script performs a complete build → run → test cycle.
 ### Main Management Script
 
 ```bash
-./scripts/quick_start.sh [command] [version]
+./scripts/quick.sh [command]
 ```
 
 **Commands:**
 - `build` - Build Docker image only
-- `run` - Run container only  
+- `start` - Start container only  
+- `stop` - Stop container only
 - `test` - Test API endpoints only
-- `clean` - Stop and remove containers
+- `clean` - Stop and remove containers and images
 - `logs` - Show container logs
 - `status` - Check container status
 - `all` - Full cycle (default)
 
 **Examples:**
 ```bash
-./scripts/quick_start.sh                    # Full cycle with default version
-./scripts/quick_start.sh test               # Test only
-./scripts/quick_start.sh all 1.0.0         # Full cycle with specific version
+./scripts/quick.sh                    # Full cycle
+./scripts/quick.sh test               # Test only
+./scripts/quick.sh all 1.0.0         # Full cycle with specific version
 ```
 
 ### Individual Scripts
@@ -78,7 +82,8 @@ This script performs a complete build → run → test cycle.
 | Script | Purpose | Usage |
 |--------|---------|-------|
 | `build.sh` | Build Docker image | `./scripts/build.sh [version]` |
-| `run.sh` | Start container | `./scripts/run.sh [version]` |
+| `start.sh` | Start container | `./scripts/start.sh [--force]` |
+| `stop.sh` | Stop container | `./scripts/stop.sh [--remove]` |
 | `test.sh` | Test API endpoints | `./scripts/test.sh [host:port]` |
 | `clean.sh` | Clean up resources | `./scripts/clean.sh [--image]` |
 | `config.sh` | Configuration management | `./scripts/config.sh` |
@@ -122,13 +127,13 @@ The `/status` endpoint supports query parameters to control which data is return
 
 **Health Check:**
 ```bash
-curl http://localhost:17003/health
+curl http://localhost:17103/health
 # Response: OK
 ```
 
 **Version Information:**
 ```bash
-curl http://localhost:17003/version
+curl http://localhost:17103/version
 ```
 
 **Response:**
@@ -148,7 +153,7 @@ curl http://localhost:17003/version
 
 **Status Information:**
 ```bash
-curl http://localhost:17003/status
+curl http://localhost:17103/status
 ```
 
 **Response:**
@@ -193,7 +198,7 @@ curl http://localhost:17003/status
 
 **Configure Servers:**
 ```bash
-curl -X PUT http://localhost:17003/servers \
+curl -X PUT http://localhost:17103/servers \
   -H "Content-Type: application/json" \
   -d '{"servers": ["pool.ntp.org", "time.google.com"]}'
 ```
@@ -201,12 +206,12 @@ curl -X PUT http://localhost:17003/servers \
 **Server Mode Control:**
 ```bash
 # Enable server mode
-curl -X PUT http://localhost:17003/server-mode \
+curl -X PUT http://localhost:17103/server-mode \
   -H "Content-Type: application/json" \
   -d '{"enabled": true}'
 
 # Disable server mode
-curl -X PUT http://localhost:17003/server-mode \
+curl -X PUT http://localhost:17103/server-mode \
   -H "Content-Type: application/json" \
   -d '{"enabled": false}'
 ```
@@ -219,7 +224,7 @@ curl -X PUT http://localhost:17003/server-mode \
 
 ### Ports
 - **123/UDP** - NTP protocol port
-- **17003/TCP** - HTTP API port
+- **17103/TCP** - HTTP API port
 
 ### Default NTP Servers
 - `pool.ntp.org`
@@ -234,59 +239,39 @@ curl -X PUT http://localhost:17003/server-mode \
    ```bash
    # Check port usage
    sudo lsof -i :123
-   
-   # Stop existing NTP service
-   sudo systemctl stop ntp
    ```
 
 2. **Container Won't Start**
    ```bash
-   # Check image
+   # Check if the Docker image exists
    docker images | grep brick-x-clock
    
-   # View logs
-   ./scripts/run.sh logs
+   # View container logs
+   docker logs el-brick-x-clock
    ```
 
 3. **Synchronization Issues**
    ```bash
-   # Check NTP status
-   curl http://localhost:17003/status
-   
-   # Test with different servers
-   curl -X PUT http://localhost:17003/servers \
-     -H "Content-Type: application/json" \
-     -d '{"servers": ["time.google.com"]}'
+   # Check NTP status via API
+   curl http://localhost:17103/status
    ```
 
 ### Debug Commands
 ```bash
 # Check container status
-./scripts/run.sh status
+docker ps --filter name=el-brick-x-clock
 
-# View detailed logs
-./scripts/run.sh logs -f
+# View detailed logs in real-time
+docker logs -f el-brick-x-clock
 
 # Test health check
-curl http://localhost:17003/health
-
-# Check NTP synchronization
-curl http://localhost:17003/status?flags=1
+curl http://localhost:17103/health
 ```
-
-## 🎯 Best Practices
-
-1. **Use reliable NTP servers** - Choose stable, low-latency servers
-2. **Monitor synchronization** - Regularly check status endpoints
-3. **Configure timezone** - Set appropriate TZ environment variable
-4. **Backup configuration** - Save custom server configurations
-5. **Monitor logs** - Use `./scripts/run.sh logs` to view output
 
 ## 📞 Support
 
 For issues or questions:
-1. Check service status: `./scripts/run.sh status`
-2. View service logs: `./scripts/run.sh logs`
-3. Test NTP synchronization: `curl http://localhost:17003/status`
+1. Check service status: `docker ps --filter name=el-brick-x-clock`
+2. View service logs: `docker logs el-brick-x-clock`
+3. Test NTP synchronization: `curl http://localhost:17103/status`
 4. Verify port availability: `sudo lsof -i :123`
-5. Check container details: `docker inspect el-brick-x-clock` 

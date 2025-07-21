@@ -23,7 +23,7 @@
 - Linux 环境 (为了 NTP 兼容性)
 - 对 NTP 服务器的网络访问
 - 123/UDP 端口可用于 NTP 流量
-- 17003/TCP 端口可用于 API
+- 17103/TCP 端口可用于 API
 - `jq` (可选, 用于在测试中格式化 JSON)
 
 ## 🛠️ 快速开始
@@ -31,7 +31,7 @@
 ### 选项 1: 一键设置 (推荐)
 
 ```bash
-./scripts/quick_start.sh
+./scripts/quick.sh
 ```
 
 此脚本执行完整的构建 → 运行 → 测试周期。
@@ -42,11 +42,14 @@
 # 构建 Docker 镜像
 ./scripts/build.sh
 
-# 运行容器
-./scripts/run.sh
+# 启动容器
+./scripts/start.sh
 
 # 测试 API 端点
 ./scripts/test.sh
+
+# 停止容器
+./scripts/stop.sh
 ```
 
 ## 📚 脚本参考
@@ -54,7 +57,7 @@
 ### 主要管理脚本
 
 ```bash
-./scripts/quick_start.sh [command] [version]
+./scripts/quick.sh [command] [version]
 ```
 
 **命令:**
@@ -68,9 +71,9 @@
 
 **示例:**
 ```bash
-./scripts/quick_start.sh                    # 使用默认版本完整周期
-./scripts/quick_start.sh test               # 只测试
-./scripts/quick_start.sh all 1.0.0         # 使用特定版本完整周期
+./scripts/quick.sh                    # 使用默认版本完整周期
+./scripts/quick.sh test               # 只测试
+./scripts/quick.sh all 1.0.0         # 使用特定版本完整周期
 ```
 
 ### 单独脚本
@@ -78,7 +81,8 @@
 | 脚本 | 用途 | 用法 |
 |--------|---------|-------|
 | `build.sh` | 构建 Docker 镜像 | `./scripts/build.sh [version]` |
-| `run.sh` | 启动容器 | `./scripts/run.sh [version]` |
+| `start.sh` | 启动容器 | `./scripts/start.sh [--force]` |
+| `stop.sh` | 停止容器 | `./scripts/stop.sh [--remove]` |
 | `test.sh` | 测试 API 端点 | `./scripts/test.sh [host:port]` |
 | `clean.sh` | 清理资源 | `./scripts/clean.sh [--image]` |
 | `config.sh` | 配置管理 | `./scripts/config.sh` |
@@ -122,13 +126,13 @@
 
 **健康检查:**
 ```bash
-curl http://localhost:17003/health
+curl http://localhost:17103/health
 # 响应: OK
 ```
 
 **版本信息:**
 ```bash
-curl http://localhost:17003/version
+curl http://localhost:17103/version
 ```
 
 **响应:**
@@ -148,7 +152,7 @@ curl http://localhost:17003/version
 
 **状态信息:**
 ```bash
-curl http://localhost:17003/status
+curl http://localhost:17103/status
 ```
 
 **响应:**
@@ -193,7 +197,7 @@ curl http://localhost:17003/status
 
 **配置服务器:**
 ```bash
-curl -X PUT http://localhost:17003/servers \
+curl -X PUT http://localhost:17103/servers \
   -H "Content-Type: application/json" \
   -d '{"servers": ["pool.ntp.org", "time.google.com"]}'
 ```
@@ -201,12 +205,12 @@ curl -X PUT http://localhost:17003/servers \
 **服务器模式控制:**
 ```bash
 # 启用服务器模式
-curl -X PUT http://localhost:17003/server-mode \
+curl -X PUT http://localhost:17103/server-mode \
   -H "Content-Type: application/json" \
   -d '{"enabled": true}'
 
 # 禁用服务器模式
-curl -X PUT http://localhost:17003/server-mode \
+curl -X PUT http://localhost:17103/server-mode \
   -H "Content-Type: application/json" \
   -d '{"enabled": false}'
 ```
@@ -250,7 +254,7 @@ log measurements statistics tracking
 | `BUILD_DATETIME` | 当前时间 | 构建时间戳 |
 | `IMAGE_NAME` | `el/brick-x-clock` | Docker 镜像名称 |
 | `CONTAINER_NAME` | `el-brick-x-clock` | Docker 容器名称 |
-| `API_PORT` | `17003` | API 服务器端口 |
+| `API_PORT` | `17103` | API 服务器端口 |
 | `NTP_PORT` | `123` | NTP 服务器端口 |
 
 ## 🌐 网络端口
@@ -258,7 +262,7 @@ log measurements statistics tracking
 | 端口 | 协议 | 用途 |
 |------|----------|---------|
 | `123` | UDP | NTP 服务器/客户端流量 |
-| `17003` | TCP | HTTP API 服务器 |
+| `17103` | TCP | HTTP API 服务器 |
 
 ## 🐳 Docker 部署
 
@@ -296,7 +300,7 @@ services:
     container_name: el-brick-x-clock
     ports:
       - "123:123/udp"
-      - "17003:17003"
+      - "17103:17103"
     restart: unless-stopped
     privileged: true
     volumes:
@@ -311,23 +315,29 @@ services:
 
 ```bash
 # 容器状态
-./scripts/quick_start.sh status
+./scripts/quick.sh status
 
 # 查看日志
-./scripts/quick_start.sh logs
+./scripts/quick.sh logs
 
 # 测试 API
-curl http://localhost:17003/health
-curl http://localhost:17003/status
+curl http://localhost:17103/health
+curl http://localhost:17103/status
 ```
 
 ### 常见问题
 
-1. **端口冲突**: 确保 123/UDP 和 17003/TCP 端口可用
-2. **网络访问**: 验证与 NTP 服务器的连接性
-3. **权限**: 容器需要 root 访问权限才能进行 NTP 操作
-4. **时间同步**: 检查系统时间是否大致准确
-5. **API 无响应**: 等待服务完全启动 (最多 30 秒)
+1. **端口冲突**: 确保 123/UDP 和 17103/TCP 端口可用
+2. **容器无法启动**
+   ```bash
+   # Check image
+   docker images | grep brick-x-clock
+   
+   # View logs
+   docker logs el-brick-x-clock
+   ```
+
+3. **Synchronization Issues**
 
 ### 日志位置
 
@@ -338,10 +348,10 @@ curl http://localhost:17003/status
 
 ```bash
 # 基本健康检查
-curl http://localhost:17003/health
+curl http://localhost:17103/health
 
 # 详细状态检查
-curl http://localhost:17003/status?flags=23
+curl http://localhost:17103/status?flags=23
 
 # 测试所有端点
 ./scripts/test.sh
@@ -351,7 +361,7 @@ curl http://localhost:17003/status?flags=23
 
 ### 服务组件
 
-- **API 服务器**: 运行在 17003 端口的 Go HTTP 服务器
+- **API 服务器**: 运行在 17103 端口的 Go HTTP 服务器
 - **NTP 守护进程**: 运行在 123 端口的后台 NTP 服务
 - **配置管理**: 动态服务器配置
 - **缓存层**: 用于提高性能的内存缓存 (30秒 TTL)
@@ -359,7 +369,7 @@ curl http://localhost:17003/status?flags=23
 
 ### 数据流
 
-1. **客户端请求** → API 服务器 (17003 端口)
+1. **客户端请求** → API 服务器 (17103 端口)
 2. **API 服务器** → NTP 守护进程 (内部通信)
 3. **NTP 守护进程** → 上游 NTP 服务器 (123 端口)
 4. **响应** → 通过 API 返回客户端
@@ -397,26 +407,26 @@ curl http://localhost:17003/status?flags=23
 ./scripts/test.sh
 
 # 使用自定义主机测试
-./scripts/test.sh localhost:17003
+./scripts/test.sh localhost:17103
 
 # 使用远程主机测试
-./scripts/test.sh api.example.com:17003
+./scripts/test.sh api.example.com:17103
 ```
 
 ### 手动测试
 
 ```bash
 # 健康检查
-curl http://localhost:17003/health
+curl http://localhost:17103/health
 
 # 版本信息
-curl http://localhost:17003/version
+curl http://localhost:17103/version
 
 # 带特定标志的状态
-curl "http://localhost:17003/status?flags=23"
+curl "http://localhost:17103/status?flags=23"
 
 # 配置服务器
-curl -X PUT http://localhost:17003/servers \
+curl -X PUT http://localhost:17103/servers \
   -H "Content-Type: application/json" \
   -d '{"servers": ["pool.ntp.org"]}'
 ```
@@ -438,7 +448,7 @@ curl -X PUT http://localhost:17003/servers \
 
 如有问题:
 - 查看上方的故障排除部分
-- 查看日志: `./scripts/quick_start.sh logs`
+- 查看日志: `docker logs el-brick-x-clock`
 - 手动测试 API 端点
 - 在 GitHub 上开启一个 issue
 
