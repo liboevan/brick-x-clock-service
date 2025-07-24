@@ -5,11 +5,11 @@
 
 # Project Configuration
 PROJECT_NAME="brick-x-clock"
-IMAGE_NAME="el/brick-x-clock"
-CONTAINER_NAME="el-brick-x-clock"
+IMAGE_NAME="brick-x-clock"
+CONTAINER_NAME="brick-x-clock"
 API_PORT="17103"
 NTP_PORT="123"
-NETWORK_NAME="el-brick-x-network"
+NETWORK_NAME="brick-x-network"
 DEFAULT_VERSION="0.1.0-dev"  # Default version for build
 RUN_VERSION="0.1.0-dev"      # Version for start/stop operations
 

@@ -247,7 +247,7 @@ curl -X PUT http://localhost:17103/server-mode \
    docker images | grep brick-x-clock
    
    # View container logs
-   docker logs el-brick-x-clock
+   docker logs brick-x-clock
    ```
 
 3. **Synchronization Issues**
@@ -259,10 +259,10 @@ curl -X PUT http://localhost:17103/server-mode \
 ### Debug Commands
 ```bash
 # Check container status
-docker ps --filter name=el-brick-x-clock
+docker ps --filter name=brick-x-clock
 
 # View detailed logs in real-time
-docker logs -f el-brick-x-clock
+docker logs -f brick-x-clock
 
 # Test health check
 curl http://localhost:17103/health
@@ -271,7 +271,7 @@ curl http://localhost:17103/health
 ## 📞 Support
 
 For issues or questions:
-1. Check service status: `docker ps --filter name=el-brick-x-clock`
-2. View service logs: `docker logs el-brick-x-clock`
+1. Check service status: `docker ps --filter name=brick-x-clock`
+2. View service logs: `docker logs brick-x-clock`
 3. Test NTP synchronization: `curl http://localhost:17103/status`
 4. Verify port availability: `sudo lsof -i :123`

@@ -252,8 +252,8 @@ log measurements statistics tracking
 |----------|---------|-------------|
 | `VERSION` | `0.1.0-dev` | 应用版本 |
 | `BUILD_DATETIME` | 当前时间 | 构建时间戳 |
-| `IMAGE_NAME` | `el/brick-x-clock` | Docker 镜像名称 |
-| `CONTAINER_NAME` | `el-brick-x-clock` | Docker 容器名称 |
+| `IMAGE_NAME` | `brick-x-clock` | Docker 镜像名称 |
+| `CONTAINER_NAME` | `brick-x-clock` | Docker 容器名称 |
 | `API_PORT` | `17103` | API 服务器端口 |
 | `NTP_PORT` | `123` | NTP 服务器端口 |
 
@@ -296,8 +296,8 @@ log measurements statistics tracking
 version: '3.8'
 services:
   brick-x-clock:
-    image: el/brick-x-clock:latest
-    container_name: el-brick-x-clock
+    image: brick-x-clock:latest
+    container_name: brick-x-clock
     ports:
       - "123:123/udp"
       - "17103:17103"
@@ -334,7 +334,7 @@ curl http://localhost:17103/status
    docker images | grep brick-x-clock
    
    # View logs
-   docker logs el-brick-x-clock
+   docker logs brick-x-clock
    ```
 
 3. **Synchronization Issues**
@@ -448,7 +448,7 @@ curl -X PUT http://localhost:17103/servers \
 
 如有问题:
 - 查看上方的故障排除部分
-- 查看日志: `docker logs el-brick-x-clock`
+- 查看日志: `docker logs brick-x-clock`
 - 手动测试 API 端点
 - 在 GitHub 上开启一个 issue
 
