@@ -36,7 +36,6 @@ type BuildInfo struct {
 	Version        string `json:"version"`
 	BuildDateTime  string `json:"buildDateTime"`
 	BuildTimestamp int64  `json:"buildTimestamp"`
-	Environment    string `json:"environment"`
 	Service        string `json:"service"`
 	Description    string `json:"description"`
 }
@@ -68,7 +67,6 @@ type StatusResponse struct {
 type VersionResponse struct {
 	Version   string     `json:"version"`
 	BuildInfo *BuildInfo `json:"buildInfo,omitempty"`
-	Error     string     `json:"error"`
 }
 
 type ServerModeResponse struct {
@@ -600,7 +598,6 @@ func handleVersion(w http.ResponseWriter, r *http.Request) {
 	response := VersionResponse{
 		Version:   version,
 		BuildInfo: buildInfo,
-		Error:     "",
 	}
 	
 	w.Header().Set("Content-Type", "application/json")
@@ -1082,4 +1079,4 @@ func main() {
 	
 	fmt.Printf("Starting Brick Clock API server on port %s\n", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
-} 
+}

@@ -26,7 +26,7 @@ RUN go build -ldflags "-X 'main.AppVersion=$VERSION' -X 'main.BuildDateTime=$BUI
 RUN echo "$VERSION" > /app/VERSION
 
 # Create build-info.json from build arguments
-RUN echo "{\"version\":\"$VERSION\",\"buildDateTime\":\"$BUILD_DATETIME\",\"buildTimestamp\":$(date +%s),\"environment\":\"production\",\"service\":\"brick-x-clock\",\"description\":\"NTP Time Synchronization\"}" > /app/build-info.json
+RUN echo "{\"version\":\"$VERSION\",\"buildDateTime\":\"$BUILD_DATETIME\",\"buildTimestamp\":$(date +%s),\"service\":\"brick-x-clock\",\"description\":\"NTP Time Synchronization\"}" > /app/build-info.json
 
 # Create config directory for brick-x-clock
 RUN mkdir -p /etc/brick/clock
@@ -65,4 +65,4 @@ EXPOSE 123/udp
 EXPOSE 17103
 
 # Set entrypoint
-ENTRYPOINT ["/app/entrypoint.sh"] 
+ENTRYPOINT ["/app/entrypoint.sh"]
