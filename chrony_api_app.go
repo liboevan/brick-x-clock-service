@@ -1068,8 +1068,13 @@ func main() {
 	
 	// Health check endpoint
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+		w.Header().Set("Content-Type", "application/json")
+		response := map[string]string{
+			"status":    "healthy",
+			"service":   "brick-x-clock-service",
+			"timestamp": time.Now().UTC().Format(time.RFC3339),
+		}
+		json.NewEncoder(w).Encode(response)
 	})
 	
 	port := "17103"
