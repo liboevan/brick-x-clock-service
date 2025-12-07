@@ -4,7 +4,7 @@
 # This file contains common variables and functions used by all scripts
 
 # Project Configuration
-PROJECT_NAME="brick-x-clock"
+PROJECT_NAME="brick-x-clock-service"
 IMAGE_NAME="brick-x-clock"
 CONTAINER_NAME="brick-x-clock"
 API_PORT="17103"
